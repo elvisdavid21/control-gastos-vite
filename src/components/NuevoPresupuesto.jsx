@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Mensaje from "./Mensaje";
 
-const NuevoPresupuesto = ({presupuesto, setPresupuesto, setIsValid}) => {
+const NuevoPresupuesto = ({presupuesto, setPresupuesto, setIsValidPresupuesto}) => {
 
     const [mensaje, setMensaje] = useState('')
     
@@ -12,7 +12,7 @@ const NuevoPresupuesto = ({presupuesto, setPresupuesto, setIsValid}) => {
             return;
         }
         setMensaje('')
-        setIsValid(true)
+        setIsValidPresupuesto(true)
     }
 
   return (
