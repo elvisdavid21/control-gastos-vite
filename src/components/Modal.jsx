@@ -1,14 +1,27 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import CerrarBtn from '../img/cerrar.svg'
 import Mensaje from './Mensaje';
 
-const Modal = ({setModal, animarModal, setAnimarModal, guardarGasto, ocultarModal}) => {
+const Modal = ({animarModal, guardarGasto, ocultarModal, gastoEditar}) => {
+
+    const [mensaje, setMensaje] = useState('')
 
     const [nombre, setNombre] = useState('');
     const [cantidad, setCantidad] = useState('');
     const [categoria, setCategoria] = useState('');
+    const [id, setId] = useState('');
+    const [fecha, setFecha] = useState('');
 
-    const [mensaje, setMensaje] = useState('')
+    //setea los datos de actualizar en la ventana del modal
+    useEffect(() => {
+        if(Object.keys(gastoEditar).length > 0) {
+            setNombre(gastoEditar.nombre)
+            setCantidad(gastoEditar.cantidad)
+            setCategoria(gastoEditar.categoria)
+            setId(gastoEditar.id)
+            setFecha(gastoEditar.fecha)
+        }
+    },[gastoEditar])
     
 
     const handleSubmit = (e) => {
@@ -21,9 +34,7 @@ const Modal = ({setModal, animarModal, setAnimarModal, guardarGasto, ocultarModa
             }, 3000)
             return;
         }
-        guardarGasto({nombre, cantidad, categoria})
-        //ocultar modal
-        ocultarModal()
+        guardarGasto({nombre, cantidad, categoria, id , fecha})
     }
 
   return (
@@ -36,7 +47,7 @@ const Modal = ({setModal, animarModal, setAnimarModal, guardarGasto, ocultarModa
         <form 
             onSubmit={handleSubmit}
             className={`formulario ${animarModal ? 'animar' : 'cerrar'}`}>
-            <legend>Nuevo Gasto</legend>
+            <legend>{gastoEditar.nombre ? 'Editar Gasto' : 'Nuevo Gasto'}</legend>
             {mensaje && <Mensaje tipo='error'>{mensaje}</Mensaje>}
             <div className='campo'>
                 <label htmlFor="nombre">Nombre Gasto</label>
@@ -75,7 +86,7 @@ const Modal = ({setModal, animarModal, setAnimarModal, guardarGasto, ocultarModa
             </div>
             <input 
                 type="submit"
-                value='Añadir Gasto'
+                value={gastoEditar.nombre ? 'Guardar Cambios' : 'Añadir Gasto'}
             />
         </form>
     </div>

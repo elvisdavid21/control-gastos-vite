@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Header from './components/Header'
 import Modal from './components/Modal'
 import ListadoGastos from './components/ListadoGastos'
@@ -15,30 +15,57 @@ function App() {
   const [modal, setModal] = useState(false);
   const [animarModal, setAnimarModal] = useState(false);
 
+  const [gastoEditar, setGastoEditar] = useState({})
+
+  //editar los gastos
+  useEffect(() => {
+    if(Object.keys(gastoEditar).length > 0) {
+      setModal(true)
+
+      setTimeout( () => {
+      setAnimarModal(true)
+    }, 500)
+    }
+  },[gastoEditar])
+
   //ocultar modal
   const ocultarModal = () => {
     console.log('ocultando...')
     setModal(false)
+    setGastoEditar({})
     setTimeout( () => {
         setAnimarModal(false)
     }, 500)
   }
 
+  //ventana de modal 
   const handleNuevoGasto = () => {
-    console.log('diste click en el botton')
     setModal(true)
+    setGastoEditar({})
 
     setTimeout( () => {
-      console.log('animando...')
       setAnimarModal(true)
     }, 500)
   }
 
   const guardarGasto = gasto => {
-    gasto.id = generarId()
-    gasto.fecha = Date.now()
-    setGastos([...gastos, gasto])
+    if(gasto.id){
+      //actualizamos
+      const gastosActualizados = gastos.map( gastosLista => gastosLista.id === gasto.id ? gasto : gastosLista)
+      setGastos(gastosActualizados)
+    }else{
+      //creamos un gasto nuevo
+      gasto.id = generarId()
+      gasto.fecha = Date.now()
+      setGastos([...gastos, gasto])
+    }
     ocultarModal()
+  }
+
+  const eliminarGasto = id => {
+  //eliminar gasto
+    const gastosActualizados = gastos.filter(gasto => gasto.id !== id)
+    setGastos(gastosActualizados)
   }
   
 
@@ -58,6 +85,8 @@ function App() {
           <main>
             <ListadoGastos
               gastos={gastos}
+              setGastoEditar={setGastoEditar}
+              eliminarGasto={eliminarGasto}
             />
           </main>
           <div className='nuevo-gasto'>
@@ -70,9 +99,10 @@ function App() {
 
     {modal && <Modal setModal={setModal}
                      animarModal={animarModal}
-                     setAnimarModal={setAnimarModal}
+                     //setAnimarModal={setAnimarModal}
                      guardarGasto={guardarGasto}
                      ocultarModal={ocultarModal}
+                     gastoEditar={gastoEditar}
     />}
     
   </div>
