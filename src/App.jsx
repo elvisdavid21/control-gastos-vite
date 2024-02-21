@@ -7,9 +7,10 @@ import IconoNuevogasto from './img/nuevo-gasto.svg'
 
 
 function App() {
-  const [gastos, setGastos] = useState([])
 
-  const [presupuesto, setPresupuesto] = useState(0);
+  const [gastos, setGastos] = useState(localStorage.getItem('gastosLocal') ? JSON.parse(localStorage.getItem('gastosLocal')) : [])
+
+  const [presupuesto, setPresupuesto] = useState(Number(localStorage.getItem('presupuestoLocal') ?? 0 ));
   const [isValidPresupuesto, setIsValidPresupuesto] = useState(false);
   
   const [modal, setModal] = useState(false);
@@ -27,6 +28,26 @@ function App() {
     }, 500)
     }
   },[gastoEditar])
+
+  //Para mantener los datos en localStorage del presupuesto
+  useEffect(() => {
+    localStorage.setItem('presupuestoLocal', presupuesto ?? 0)
+  },[presupuesto])
+
+  //para cargar la pagina de gastos si ya hay un presupuesto en LS(local storage)
+  useEffect(() => {
+    const presupuestoLS = Number(localStorage.getItem('presupuestoLocal') ?? 0)
+    if(presupuestoLS > 0){
+      setIsValidPresupuesto(true)
+    }
+  },[])
+
+  //LS para los gastos
+  useEffect(() => {
+    if(Object.keys(gastos).length > 0) {
+      localStorage.setItem('gastosLocal', JSON.stringify(gastos) ?? [])
+    }
+  }, [gastos])
 
   //ocultar modal
   const ocultarModal = () => {
